@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Donations for {{ streamer }}</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2em; }
+    </style>
+  </head>
+  <body>
+    <h1>Donations for {{ streamer }}</h1>
+    <ul>
+      {% for d in donations %}
+        <li><strong>{{ d.nickname }}</strong> donated {{ d.amount }} USD - {{ d.message }} ({{ d.status }})</li>
+      {% else %}
+        <li>No donations yet.</li>
+      {% endfor %}
+    </ul>
+    <p><a href="{{ url_for('donation_form', streamer=streamer) }}">Back to form</a></p>
+  </body>
+</html>

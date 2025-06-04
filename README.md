@@ -16,5 +16,7 @@ A simple prototype for a crypto-based donation platform for streamers.
    ```
 3. Open `http://localhost:5000/<streamer>` in your browser to donate to a streamer.
 
-This prototype stores donations in memory and does not handle real cryptocurrency payments yet.
+Set the `COINBASE_COMMERCE_API_KEY` environment variable with your Coinbase Commerce API key before running the server. The app will create a charge for each donation request and redirect the donor to Coinbase's hosted payment page.
+
+This prototype stores donations in memory, so payments are not persisted across restarts.
 
