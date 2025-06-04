@@ -10,7 +10,7 @@
     <h1>Donations for {{ streamer }}</h1>
     <ul>
       {% for d in donations %}
-        <li><strong>{{ d.nickname }}</strong> donated {{ d.amount }} {{ d.currency }} - {{ d.message }} ({{ d.status }})</li>
+        <li><strong>{{ d.nickname }}</strong> donated {{ d.amount }} {{ d.currency }} on {{ d.network }} - {{ d.message }} ({{ d.status }})</li>
       {% else %}
         <li>No donations yet.</li>
       {% endfor %}

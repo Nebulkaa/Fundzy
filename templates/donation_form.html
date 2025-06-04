@@ -16,16 +16,23 @@
       <label>Amount:<br><input type="number" step="any" name="amount" required></label>
       <label>Currency:<br>
         <select name="currency">
-          <option value="TRX">TRX</option>
           <option value="USDT">USDT</option>
+          <option value="TRX">TRX</option>
+        </select>
+      </label>
+      <label>Network:<br>
+        <select name="network">
+          {% for net, addr in addresses.items() if addr %}
+          <option value="{{ net }}">{{ net|capitalize }}</option>
+          {% endfor %}
         </select>
       </label>
       <label>Message:<br><input type="text" name="message"></label>
       <button type="submit">Donate</button>
     </form>
-    {% if address %}
-    <p>Send TRX or USDT to: <strong>{{ address }}</strong></p>
-    {% endif %}
+    {% for net, addr in addresses.items() if addr %}
+    <p>Address for {{ net|capitalize }}: <strong>{{ addr }}</strong></p>
+    {% endfor %}
     <p><a href="{{ url_for('list_donations', streamer=streamer) }}">View donations</a></p>
   </body>
 </html>

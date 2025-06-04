@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, request
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 from tronpy import Tron
 from tronpy.keys import PrivateKey
 
@@ -16,6 +16,14 @@ if _priv_key_hex:
         tron_address = priv.public_key.to_base58check_address()
     except ValueError:
         tron_address = None
+
+eth_address = os.getenv("ETHEREUM_ADDRESS", "")
+
+donation_addresses: Dict[str, str] = {
+    "tron": tron_address,
+    "ethereum": eth_address,
+}
+
 tron = Tron()
 
 @dataclass
@@ -24,6 +32,7 @@ class Donation:
     nickname: str
     amount: float
     currency: str
+    network: str
     message: str
     tx_id: str = ""
     status: str = "pending"
@@ -33,21 +42,23 @@ donations: List[Donation] = []
 
 @app.route('/<streamer>')
 def donation_form(streamer: str):
-    return render_template("donation_form.html", streamer=streamer, address=tron_address)
+    return render_template("donation_form.html", streamer=streamer, addresses=donation_addresses)
 
 @app.route('/<streamer>/donate', methods=['POST'])
 def donate(streamer: str):
     nickname = request.form['nickname']
     amount = float(request.form['amount'])
     currency = request.form['currency']
+    network = request.form['network']
     message = request.form.get('message', '')
-    donation = Donation(streamer, nickname, amount, currency, message)
+    donation = Donation(streamer, nickname, amount, currency, network, message)
     donations.append(donation)
+    address = donation_addresses.get(network)
     return render_template(
         "payment_instructions.html",
         streamer=streamer,
         donation=donation,
-        address=tron_address,
+        address=address,
     )
 
 @app.route('/<streamer>/donations')
