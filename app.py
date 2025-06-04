@@ -1,19 +1,31 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from dataclasses import dataclass
 from typing import List
-from coinbase_commerce.client import Client
+from tronpy import Tron
+from tronpy.keys import PrivateKey
 
 app = Flask(__name__)
-client = Client(api_key=os.getenv("COINBASE_COMMERCE_API_KEY", ""))
+
+# derive donation address from TRON_PRIVATE_KEY if provided
+_priv_key_hex = os.getenv("TRON_PRIVATE_KEY", "")
+tron_address = None
+if _priv_key_hex:
+    try:
+        priv = PrivateKey(bytes.fromhex(_priv_key_hex))
+        tron_address = priv.public_key.to_base58check_address()
+    except ValueError:
+        tron_address = None
+tron = Tron()
 
 @dataclass
 class Donation:
     streamer: str
     nickname: str
     amount: float
+    currency: str
     message: str
-    charge_id: str = ""
+    tx_id: str = ""
     status: str = "pending"
 
 donations: List[Donation] = []
@@ -21,28 +33,22 @@ donations: List[Donation] = []
 
 @app.route('/<streamer>')
 def donation_form(streamer: str):
-    return render_template("donation_form.html", streamer=streamer)
+    return render_template("donation_form.html", streamer=streamer, address=tron_address)
 
 @app.route('/<streamer>/donate', methods=['POST'])
 def donate(streamer: str):
     nickname = request.form['nickname']
     amount = float(request.form['amount'])
+    currency = request.form['currency']
     message = request.form.get('message', '')
-    if client.api_key:
-        charge = client.charge.create(
-            name=f"Donation to {streamer}",
-            description=message or f"Donation from {nickname}",
-            local_price={"amount": amount, "currency": "USD"},
-            pricing_type="fixed_price",
-            metadata={"streamer": streamer, "nickname": nickname},
-            redirect_url=url_for('list_donations', streamer=streamer, _external=True),
-            cancel_url=url_for('donation_form', streamer=streamer, _external=True)
-        )
-        donations.append(Donation(streamer, nickname, amount, message, charge.id))
-        return redirect(charge.hosted_url)
-    else:
-        donations.append(Donation(streamer, nickname, amount, message))
-        return redirect(url_for('list_donations', streamer=streamer))
+    donation = Donation(streamer, nickname, amount, currency, message)
+    donations.append(donation)
+    return render_template(
+        "payment_instructions.html",
+        streamer=streamer,
+        donation=donation,
+        address=tron_address,
+    )
 
 @app.route('/<streamer>/donations')
 def list_donations(streamer: str):

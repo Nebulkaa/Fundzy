@@ -14,9 +14,10 @@ A simple prototype for a crypto-based donation platform for streamers.
    ```bash
    python app.py
    ```
+
 3. Open `http://localhost:5000/<streamer>` in your browser to donate to a streamer.
 
-Set the `COINBASE_COMMERCE_API_KEY` environment variable with your Coinbase Commerce API key before running the server. The app will create a charge for each donation request and redirect the donor to Coinbase's hosted payment page.
+Set the `TRON_PRIVATE_KEY` environment variable to the hex-encoded private key of the wallet that will receive donations. The application displays the derived TRON address for donors to send TRX or USDT (TRC20) directly.
 
 This prototype stores donations in memory, so payments are not persisted across restarts.
 

@@ -13,10 +13,19 @@
     <h1>Donate to {{ streamer }}</h1>
     <form method="post" action="{{ url_for('donate', streamer=streamer) }}">
       <label>Nickname:<br><input type="text" name="nickname" required></label>
-      <label>Amount (USD):<br><input type="number" step="any" name="amount" required></label>
+      <label>Amount:<br><input type="number" step="any" name="amount" required></label>
+      <label>Currency:<br>
+        <select name="currency">
+          <option value="TRX">TRX</option>
+          <option value="USDT">USDT</option>
+        </select>
+      </label>
       <label>Message:<br><input type="text" name="message"></label>
       <button type="submit">Donate</button>
     </form>
+    {% if address %}
+    <p>Send TRX or USDT to: <strong>{{ address }}</strong></p>
+    {% endif %}
     <p><a href="{{ url_for('list_donations', streamer=streamer) }}">View donations</a></p>
   </body>
 </html>
