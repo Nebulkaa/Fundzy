@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Send {{ donation.currency }} via {{ donation.network }} to {{ streamer }}</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2em; }
+    </style>
+  </head>
+  <body>
+    <h1>Donation Instructions</h1>
+    <p>Please send <strong>{{ donation.amount }} {{ donation.currency }}</strong> via <strong>{{ donation.network|capitalize }}</strong> to the address below:</p>
+    <pre>{{ address }}</pre>
+    <p>After sending, your donation will appear once confirmed on the blockchain.</p>
+    <p><a href="{{ url_for('list_donations', streamer=streamer) }}">View donations</a></p>
+  </body>
+</html>
